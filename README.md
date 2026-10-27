@@ -49,3 +49,27 @@ Never commit `.env` files, database passwords, AWS credentials, or other secrets
 
 ## Project Purpose
 This project demonstrates cloud-based evidence storage, cryptographic integrity verification, database persistence, and audit logging as part of a Cloud Computing project.
+
+
+## Project: EvidenceChain – Digital Evidence Collection & Chain-of-Custody System
+
+**Architecture and Components**
+- **Frontend:** React provides the dashboard for uploading evidence, viewing records, and verifying file integrity.
+- **Backend:** Node.js and Express handle API requests, file uploads, hash verification, and audit logging.
+- **Amazon EC2:** Hosts and runs the application backend.
+- **Amazon S3:** Stores uploaded digital evidence files securely.
+- **Amazon RDS (MySQL):** Stores evidence metadata, SHA-256 hashes, and audit records.
+
+**Workflow**
+1. A user uploads a digital evidence file and enters its details.
+2. The backend generates a SHA-256 hash and stores the file in S3.
+3. Evidence metadata and the original hash are saved in RDS.
+4. During verification, the system calculates the uploaded file's hash and compares it with the stored hash.
+5. Matching hashes indicate that the file passes the integrity check; different hashes indicate possible tampering.
+6. The system records evidence registration, verification, and tampering events in its audit trail.
+
+**Technologies:** React, Node.js, Express, MySQL, Amazon EC2, Amazon S3, and Amazon RDS.
+
+**How to run:** Install Node.js and the project dependencies, configure the required environment variables locally, start the backend using `npm start` in the backend directory, and run the frontend using the commands documented in the project README.
+
+**Security note:** API keys, database passwords, and other secrets must never be committed to the public repository.
