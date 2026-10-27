@@ -16,7 +16,7 @@ const [verifyResult, setVerifyResult] = useState(null)
 const [verifyMessage, setVerifyMessage] = useState('')
 async function loadAuditLogs() {
   try {
-    const response = await fetch('http://localhost:5000/api/audit')
+    const response = await fetch('/api/audit')
     if (!response.ok) throw new Error('Failed to load audit log')
     const logs = await response.json()
     setAuditLogs(logs)
@@ -26,7 +26,7 @@ async function loadAuditLogs() {
 }
 
   useEffect(() => {
-  fetch('http://localhost:5000/api/evidence')
+  fetch('/api/evidence')
     .then(response => {
       if (!response.ok) throw new Error('Failed to load evidence')
       return response.json()
@@ -42,7 +42,7 @@ async function loadAuditLogs() {
 }, [])
 
 useEffect(() => {
-  fetch('http://localhost:5000/api/audit')
+  fetch('/api/audit')
     .then(response => {
       if (!response.ok) throw new Error('Failed to load audit log')
       return response.json()
@@ -67,7 +67,7 @@ async function registerEvidence(e) {
     formData.append('evidenceName', evidenceName)
     formData.append('file', file)
 
-    const response = await fetch('http://localhost:5000/api/evidence', {
+    const response = await fetch('/api/evidence', {
       method: 'POST',
       body: formData,
     })
@@ -116,7 +116,7 @@ async function verifyEvidence(e) {
     formData.append('file', verifyFile)
 
     const response = await fetch(
-      `http://localhost:5000/api/evidence/${verifyId}/verify`,
+      `/api/evidence/${verifyId}/verify`,
       { method: 'POST', body: formData }
     )
 
@@ -144,7 +144,10 @@ await loadAuditLogs()
         <div className="nav-item">▤ &nbsp; Evidence Registry</div>
         <div className="nav-item">◷ &nbsp; Chain of Custody</div>
         <div className="nav-item">✓ &nbsp; Integrity Verification</div>
-        <div className="sidebar-bottom"><span className="status-dot" /> Demo workspace <small>Backend connection pending</small></div>
+        <div className="sidebar-bottom">
+  <span className="status-dot" /> Demo workspace
+  <small>Cloud backend connected</small>
+</div>
       </aside>
 
       <main className="main">
@@ -159,10 +162,29 @@ await loadAuditLogs()
         </section>
 
         <section className="stats">
-          <div className="stat-card"><span className="stat-icon purple">▤</span><p>Total evidence records</p><h2>{evidence.length}</h2><small>Records in this browser session</small></div>
-          <div className="stat-card"><span className="stat-icon green">✓</span><p>Integrity verified</p><h2>0</h2><small>Awaiting backend integration</small></div>
-          <div className="stat-card"><span className="stat-icon orange">◷</span><p>Custody events</p><h2>0</h2><small>Audit trail integration pending</small></div>
-        </section>
+  <div className="stat-card">
+    <span className="stat-icon purple">▤</span>
+    <p>Total evidence records</p>
+    <h2>{evidence.length}</h2>
+    <small>Records from the database</small>
+  </div>
+
+  <div className="stat-card">
+    <span className="stat-icon green">✓</span>
+    <p>Integrity verified</p>
+    <h2>
+      {auditLogs.filter(log => log.action === 'INTEGRITY_VERIFIED').length}
+    </h2>
+    <small>Successful verification events</small>
+  </div>
+
+  <div className="stat-card">
+    <span className="stat-icon orange">◷</span>
+    <p>Custody events</p>
+    <h2>{auditLogs.length}</h2>
+    <small>Recorded audit events</small>
+  </div>
+</section>
 
         <section className="content-grid">
           <div className="panel">
@@ -191,7 +213,10 @@ await loadAuditLogs()
               <div className="workflow-line"/>
               <div className="workflow-step"><span>4</span><div><b>Custody audit trail</b><small>Record action and timestamp</small></div></div>
             </div>
-            <div className="notice"><b>Demo status</b><p>This screen currently stores records in browser memory only. S3, SHA-256, database storage and alerts will be connected in the backend.</p></div>
+            <div className="notice">
+  <b>Cloud integration active</b>
+  <p>Evidence is stored in Amazon S3, metadata and audit events are persisted in MySQL, and SHA-256 hashes are used for integrity verification.</p>
+</div>
           </div>
         </section>
 
@@ -258,7 +283,13 @@ await loadAuditLogs()
 </section>
 
         <section className="panel records-panel">
-          <div className="panel-heading"><div><h2>Recent evidence records</h2><p>Evidence registered in this session</p></div><span className="record-count">{evidence.length} records</span></div>
+          <div className="panel-heading">
+  <div>
+    <h2>Recent evidence records</h2>
+    <p>Evidence records retrieved from the database</p>
+  </div>
+  <span className="record-count">{evidence.length} records</span>
+</div>
           {evidence.length === 0 ? <div className="empty-state"><span>▤</span><b>No evidence registered yet</b><p>Add a fictional sample file using the form above to see a record here.</p></div> :
             <div className="table-wrap"><table><thead><tr><th>RECORD ID</th><th>CASE</th><th>EVIDENCE</th><th>FILE</th><th>STATUS</th><th>REGISTERED</th></tr></thead><tbody>{evidence.map(item => <tr key={item.id}><td>{item.id}</td><td>{item.caseName}</td><td>{item.evidenceName}</td><td>{item.fileName}</td><td><span className="pending">{item.status}</span></td><td>{item.time}</td></tr>)}</tbody></table></div>
           }
@@ -304,7 +335,10 @@ await loadAuditLogs()
   )}
 </section>
 
-        <footer>EvidenceChain · Digital Evidence Collection &amp; Chain of Custody <span>Prototype interface · Cloud integration pending</span></footer>
+        <footer>
+  EvidenceChain · Digital Evidence Collection &amp; Chain of Custody
+  <span>Cloud-deployed demo · SHA-256 integrity verification</span>
+</footer>
       </main>
     </div>
   )
